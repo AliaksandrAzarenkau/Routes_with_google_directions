@@ -1,1 +1,4 @@
 /venv/
+/project/db.sqlite3
+/project/registration/migrations/0001_initial.py
+/project/registration/migrations/0002_remove_userprofile_phone_number.py
