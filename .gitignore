@@ -2,3 +2,9 @@
 /project/db.sqlite3
 /project/registration/migrations/0001_initial.py
 /project/registration/migrations/0002_remove_userprofile_phone_number.py
+/project/client/migrations/0001_initial.py
+/project/client/migrations/0002_client_created.py
+/project/client/migrations/0003_client_phone_number_alter_client_building_and_more.py
+/project/client/migrations/0004_alter_client_work_end_time_and_more.py
+/project/client/migrations/0005_alter_client_geolocation.py
+/project/client/migrations/0006_remove_client_created_remove_client_work_end_time_and_more.py
