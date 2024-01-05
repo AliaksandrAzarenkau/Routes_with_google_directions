@@ -12,6 +12,17 @@ class ClientForm(forms.Form):
     building = forms.CharField(required=True, label='Дом/строение')
     geolocation = forms.CharField(label='Координаты')
 
+    class Meta:
+        model = Client
+        fields = ('organisation_name',
+                  'phone_number',
+                  'country',
+                  'city',
+                  'street',
+                  'building',
+                  'geolocation',
+                  )
+
     def post(self, request):
         Client.objects.create(
             organisation_name=request.get('organisation_name'),
@@ -22,3 +33,10 @@ class ClientForm(forms.Form):
             building=request.get('building'),
             geolocation=request.get('geolocation'),
         )
+
+    def get(self, request):
+        response = {}
+        for values in request:
+            if type(values) == dict:
+                response[values.get('id')] = values
+        return response

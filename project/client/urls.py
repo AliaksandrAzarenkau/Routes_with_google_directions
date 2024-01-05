@@ -1,7 +1,8 @@
 from django.urls import path
 
-from .views import create
+from .views import post, get
 
 urlpatterns = [
-    path('', create)
+    path('add/', post),
+    path('get/', get)
 ]
