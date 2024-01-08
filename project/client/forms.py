@@ -23,6 +23,7 @@ class ClientForm(forms.Form):
                   'geolocation',
                   )
 
+# Добавление клиента
     def post(self, request):
         Client.objects.create(
             organisation_name=request.get('organisation_name'),
@@ -34,9 +35,12 @@ class ClientForm(forms.Form):
             geolocation=request.get('geolocation'),
         )
 
-    def get(self, request):
+# Получение списка всех клиентов
+    def get_all(self, request):
         response = {}
         for values in request:
             if type(values) == dict:
+                # Выводим список всех клиентов в словарь в формате:
+                # {id клиента: {вся информация из модели Client по id}}
                 response[values.get('id')] = values
         return response
