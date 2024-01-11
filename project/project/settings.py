@@ -1,3 +1,4 @@
+from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -110,3 +111,40 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'registration.User'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'registration.backends.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated'
+    )
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN': {
+        'LIFETIME': timedelta(minutes=60),
+        'SLIDING_REFRESH_LIFETIME': timedelta(days=1),
+    },
+    'REFRESH_TOKEN': {
+        'LIFETIME': timedelta(days=7),
+        'SLIDING_REFRESH_LIFETIME': timedelta(days=14),
+        'SLIDING_LIFETIME': timedelta(days=30),
+    },
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+    'VERIFYING_KEY': None,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'USER_ID_CLAIM': 'user_id',
+}
+
+SWAGGER_SETTINGS = {
+    'DEFAULT_INFO': 'registration_project.urls.swagger_info',
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header',
+        },
+    },
+}

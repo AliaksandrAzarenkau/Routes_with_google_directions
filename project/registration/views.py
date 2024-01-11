@@ -1,41 +1,54 @@
-from rest_framework.permissions import AllowAny
+from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.generics import RetrieveUpdateAPIView
 
-from .models import User
-from .serializers import UserCreateSerializer
+from .serializers import RegistrationSerializer, LoginSerializer, UserSerializer
 
 
-class BaseUserView(APIView):
+class RegistrationAPIVew(APIView):
     permission_classes = [AllowAny]
-    serializer_class = None
-
-
-class CreateUserView(BaseUserView, APIView):
-    serializer_class = UserCreateSerializer
+    serializer_class = RegistrationSerializer
 
     def post(self, request):
-        if request.method == 'POST':
-            data = request.data
-            serializer = self.serializer_class(data=data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response({'data': serializer.data}, status=201)
-            return Response(serializer.errors, status=400)
+        """Регистрация пользователя"""
+        user = request.data.get('user', {})
+        serializer = self.serializer_class(data=user)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-class UpdateUserView(BaseUserView, APIView):
-    serializer_class = UserCreateSerializer
+class LoginAPIView(APIView):
+    permission_classes = [AllowAny]
+    serializer_class = LoginSerializer
 
-    def put(self, request):
-        if request.method == 'PUT':
-            data = request.data
-            serializer = self.serializer_class(data=data)
-            if serializer.is_valid():
-                self.serializer_class.update(
-                                             request,
-                                             instance=User.objects.filter(username=(data.get('username'))),
-                                             validated_data=data,
-                                             )
-                return Response({'data': serializer.data}, status=201)
-            return Response(serializer.errors, status=400)
+    def post(self, request):
+        """Логинизация пользователя"""
+        user = request.data.get('user', {})
+        serializer = self.serializer_class(data=user)
+        serializer.is_valid(raise_exception=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserSerializer
+
+    def retrieve(self, request, *args, **kwargs):
+        """Преобразование объекта User для последующего возврата"""
+        serializer = self.serializer_class(request.user)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def update(self, request, *args, **kwargs):
+        """Обновление объекта User"""
+        serializer_data = request.data.get('user', {})
+        serializer = self.serializer_class(request.user, data=serializer_data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
