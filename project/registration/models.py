@@ -49,7 +49,8 @@ class User(AbstractUser, PermissionsMixin):
                                width_field=None,
                                max_length=100,
                                blank=True,
-                               verbose_name='Фото профиля')
+                               verbose_name='Фото профиля'
+                               )
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']

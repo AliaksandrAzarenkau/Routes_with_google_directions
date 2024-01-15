@@ -139,7 +139,7 @@ SIMPLE_JWT = {
 }
 
 SWAGGER_SETTINGS = {
-    'DEFAULT_INFO': 'registration_project.urls.swagger_info',
+    'DEFAULT_INFO': 'project.urls.swagger_info',
     'SECURITY_DEFINITIONS': {
         'Bearer': {
             'type': 'apiKey',

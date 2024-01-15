@@ -18,3 +18,4 @@
 /project/registration/migrations/0010_delete_profile.py
 /project/.r/
 /project/registration/migrations/0011_alter_user_managers_remove_user_position_and_more.py
+/project/client/migrations/0007_remove_client_building_remove_client_city_and_more.py
