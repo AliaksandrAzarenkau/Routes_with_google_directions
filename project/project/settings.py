@@ -112,39 +112,42 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'registration.User'
 
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'registration.backends.JWTAuthentication',
-    ),
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated'
-    )
-}
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
 
-SIMPLE_JWT = {
-    'ACCESS_TOKEN': {
-        'LIFETIME': timedelta(minutes=60),
-        'SLIDING_REFRESH_LIFETIME': timedelta(days=1),
-    },
-    'REFRESH_TOKEN': {
-        'LIFETIME': timedelta(days=7),
-        'SLIDING_REFRESH_LIFETIME': timedelta(days=14),
-        'SLIDING_LIFETIME': timedelta(days=30),
-    },
-    'ALGORITHM': 'HS256',
-    'SIGNING_KEY': SECRET_KEY,
-    'VERIFYING_KEY': None,
-    'AUTH_HEADER_TYPES': ('Bearer',),
-    'USER_ID_CLAIM': 'user_id',
-}
+# REST_FRAMEWORK = {
+#     'DEFAULT_AUTHENTICATION_CLASSES': (
+#         'registration.backends.JWTAuthentication',
+#     ),
+#     'DEFAULT_PERMISSION_CLASSES': (
+#         'rest_framework.permissions.IsAuthenticated'
+#     )
+# }
 
-SWAGGER_SETTINGS = {
-    'DEFAULT_INFO': 'project.urls.swagger_info',
-    'SECURITY_DEFINITIONS': {
-        'Bearer': {
-            'type': 'apiKey',
-            'name': 'Authorization',
-            'in': 'header',
-        },
-    },
-}
+# SIMPLE_JWT = {
+#     'ACCESS_TOKEN': {
+#         'LIFETIME': timedelta(minutes=60),
+#         'SLIDING_REFRESH_LIFETIME': timedelta(days=1),
+#     },
+#     'REFRESH_TOKEN': {
+#         'LIFETIME': timedelta(days=7),
+#         'SLIDING_REFRESH_LIFETIME': timedelta(days=14),
+#         'SLIDING_LIFETIME': timedelta(days=30),
+#     },
+#     'ALGORITHM': 'HS256',
+#     'SIGNING_KEY': SECRET_KEY,
+#     'VERIFYING_KEY': None,
+#     'AUTH_HEADER_TYPES': ('Bearer',),
+#     'USER_ID_CLAIM': 'user_id',
+# }
+
+# SWAGGER_SETTINGS = {
+#     'DEFAULT_INFO': 'project.urls.swagger_info',
+#     'SECURITY_DEFINITIONS': {
+#         'Bearer': {
+#             'type': 'apiKey',
+#             'name': 'Authorization',
+#             'in': 'header',
+#         },
+#     },
+# }
