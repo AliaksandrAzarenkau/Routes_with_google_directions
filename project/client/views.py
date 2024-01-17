@@ -13,7 +13,7 @@ class ClientAPIVew(generics.ListAPIView):
     queryset = Client.objects.all()
     permission_classes = [AllowAny]
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
-    template_name = 'client_add.html'
+    template_name = 'client_create.html'
     serializer_class = ClientCreateSerializer
 
     def get(self, request, *args, **kwargs):

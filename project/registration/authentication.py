@@ -10,7 +10,6 @@ class CustomUserAuthentication(authentication.BaseAuthentication):
     def authenticate(self, request):
         token = request.COOKIES.get('jwt')
 
-
         if not token:
             return None
 
