@@ -1,29 +1,70 @@
+from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect
+from django.http import HttpResponseRedirect
+from django.contrib import messages
 from rest_framework import views, response, exceptions, permissions, status, generics
 from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
-from rest_framework.generics import RetrieveUpdateAPIView
 
-from .serializers import UserSerializer
+
+from .serializers import UserSerializer, LoginSerializer, UserRegisterSerializer
 from .services import user_email_selector, create_token
 from .authentication import CustomUserAuthentication
+from .models import User
 
 
-class RegistrationAPIVew(views.APIView):
-    serializer_class = UserSerializer
+class RegistrationAPIVew(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserRegisterSerializer
     permission_classes = [permissions.AllowAny]
+    renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
+    template_name = 'signup.html'
+
+    def get(self, request, *args, **kwargs):
+        """Получение данных для формы регистрации"""
+        queryset = self.queryset
+
+        if request.accepted_renderer.format == 'html':
+            serializer = self.serializer_class()
+            context = {'clients': queryset, 'serializer': serializer}
+            return response.Response(context, template_name=self.template_name)
+        else:
+            serializer = self.serializer_class(queryset, many=True)
+            return response.Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
+        """Регистрация пользователя"""
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        return response.Response(data={1: 2})
+        if request.accepted_renderer.format == 'html':
+            message = "Регистрация пройдена успешно"
+            messages.success(request, message)
+            return redirect('./login')
+
+        return response.Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-class LoginAPIView(views.APIView):
+class LoginAPIView(generics.ListAPIView):
+    queryset = User.objects.all()
     permission_classes = [permissions.AllowAny]
+    renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
+    template_name = 'login.html'
+    serializer_class = LoginSerializer
+
+    def get(self, request, *args, **kwargs):
+        """Получение данных пользователей"""
+        queryset = self.queryset
+
+        if request.accepted_renderer.format == 'html':
+            serializer = self.serializer_class()
+            context = {'user': queryset, 'serializer': serializer}
+            return response.Response(context, template_name=self.template_name)
+        else:
+            return response.Response(status=status.HTTP_200_OK)
 
     def post(self, request):
+        """Авторизация и аутентификация"""
         email = request.data['email']
         password = request.data['password']
 
@@ -36,24 +77,55 @@ class LoginAPIView(views.APIView):
             raise exceptions.AuthenticationFailed("Неверный пароль")
 
         token = create_token(user_id=user.id)
-        print(user.id)
 
-        resp = response.Response()
+        authenticate(request, username=email, password=password)
 
-        resp.set_cookie(key='jwt', value=token, httponly=True)
+        if user and user.is_active:
+            login(request, user)
 
-        return resp
+        if request.accepted_renderer.format == 'html':
+            resp = HttpResponseRedirect(redirect_to='./home')
+            resp.set_cookie(key='jwt', value=token)
+            return resp
+        else:
+            resp = response.Response()
+            resp.set_cookie(key='jwt', value=token)
+            return resp
 
 
-class LogoutAPIView(views.APIView):
-    authentication_classes = [CustomUserAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+class LogoutAPIView(generics.ListAPIView):
+    queryset = User.objects.all()
+    permission_classes = [permissions.AllowAny]
+    renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
+    template_name = 'logout.html'
+    serializer_class = LoginSerializer
+
+    def get(self, request, *args, **kwargs):
+        """Получение данных пользователя"""
+        queryset = self.queryset
+
+        if request.accepted_renderer.format == 'html':
+            serializer = self.serializer_class()
+            context = {'user': queryset, 'serializer': serializer}
+            return response.Response(context, template_name=self.template_name)
+        else:
+            return response.Response(status=status.HTTP_200_OK)
 
     def post(self, request):
+        """Выход из профиля"""
         resp = response.Response()
-        resp.delete_cookie('jwt')
 
         resp.data = {'message': 'Успешно'}
+
+        if request.accepted_renderer.format == 'html':
+            resp = HttpResponseRedirect(redirect_to='./home')
+            resp.delete_cookie('jwt')
+            logout(request)
+
+            return resp
+
+        resp.delete_cookie('jwt')
+        logout(request)
 
         return resp
 
@@ -64,58 +136,31 @@ class GetCurrentUserAPIVew(views.APIView):
     serializer_class = UserSerializer
 
     def get(self, request):
+        """Получение информации о текущем пользователе"""
         user = request.user
 
         serializer = self.serializer_class(user)
 
         return response.Response(serializer.data)
-# class RegistrationAPIVew(APIView):
-#     permission_classes = [AllowAny]
-#     serializer_class = RegistrationSerializer
-#
-#     def post(self, request):
-#         """Регистрация пользователя"""
-#         user = request.data.get('user', {})
-#         serializer = self.serializer_class(data=user)
-#         serializer.is_valid(raise_exception=True)
-#         serializer.save()
-#
-#         return Response(serializer.data, status=status.HTTP_201_CREATED)
-#
-#
-# class LoginAPIView(generics.ListAPIView):
-#     queryset = User.objects.all()
-#     permission_classes = [AllowAny]
-#     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
-#     template_name = 'login.html'
-#     serializer_class = LoginSerializer
-#
-#     def post(self, request):
-#         """Логинизация пользователя"""
-#         serializer = self.serializer_class(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-#
-#         if request.accepted_renderer.format == 'html':
-#             return redirect('./client_create')
-#
-#         return Response(serializer.data, status=status.HTTP_201_CREATED)
-#
-#
-# class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
-#     permission_classes = [IsAuthenticated]
-#     serializer_class = UserSerializer
-#
-#     def retrieve(self, request, *args, **kwargs):
-#         """Преобразование объекта User для последующего возврата"""
-#         serializer = self.serializer_class(request.user)
-#
-#         return Response(serializer.data, status=status.HTTP_200_OK)
-#
-#     def update(self, request, *args, **kwargs):
-#         """Обновление объекта User"""
-#         serializer_data = request.data.get('user', {})
-#         serializer = self.serializer_class(request.user, data=serializer_data, partial=True)
-#         serializer.is_valid(raise_exception=True)
-#         serializer.save()
-#
-#         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class HomePageView(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.AllowAny]
+    renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
+    template_name = 'index.html'
+
+    def get(self, request, *args, **kwargs):
+        """Получение данных пользователей"""
+        queryset = self.queryset
+
+        if request.accepted_renderer.format == 'html':
+            serializer = self.serializer_class()
+            context = {'user': queryset, 'serializer': serializer}
+            return response.Response(context, template_name=self.template_name)
+        else:
+            return response.Response(status=status.HTTP_200_OK)
+
+    def post(self, request):
+        return response.Response(request)

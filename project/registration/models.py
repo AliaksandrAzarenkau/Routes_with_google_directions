@@ -43,7 +43,7 @@ class User(auth_models.AbstractUser):
     last_name = models.CharField(max_length=255, verbose_name='Фамилия')
     position = models.CharField(max_length=255, blank=True, verbose_name='Должность')
     profile_photo = models.ImageField(
-        upload_to='./registration/profile_images/',
+        upload_to='./registration/static/profile_images',
         height_field=None,
         width_field=None,
         max_length=100,
