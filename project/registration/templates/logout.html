@@ -13,16 +13,11 @@
             <div class="col-lg-6">
                 <div class="card" id="basic-info">
                     <div class="card-header mt-0">
-                        <h5>Регистрация</h5>
+                        <h5>Выйти из профиля</h5>
                     </div>
                     <div class="card-body pt-0">
                         <form role="form" method="POST" autocomplete="off">
-                            <div class='row mt-2'>
-                                {% csrf_token %}
-                                {% render_form serializer %}
-                            </div>
-                            <button class="btn btn-success btn-md float-end mt-2 mb-0 mx-2" type="submit">
-                                Зарегистрироваться
+                            <button class="btn btn-success btn-md float-end mt-2 mb-0 mx-2" type="submit">Выйти
                             </button>
                         </form>
                     </div>
@@ -35,3 +30,4 @@
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
 {% endblock %}
+
