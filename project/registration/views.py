@@ -164,3 +164,27 @@ class HomePageView(generics.ListAPIView):
 
     def post(self, request):
         return response.Response(request)
+
+
+class UserEditProfile(generics.RetrieveUpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserProfileUpdateSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
+    template_name = 'current_user.html'
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        return user
+
+    def update(self, request, *args, **kwargs):
+        profile_data = validated_data.pop('profile', None)
+        # If we have one
+        if profile_data is not None:
+            # We set address, assuming that you always set address
+            # if you provide profile
+            instance.profile.address = profile_data['address']
+            # And save profile
+            instance.profile.save()
+        # Rest will be handled by DRF
+        return super().update(instance, validated_data)

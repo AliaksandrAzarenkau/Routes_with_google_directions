@@ -4,7 +4,7 @@ from .models import User
 
 
 class UserSerializer(serializers.Serializer):
-    id = serializers.ImageField(read_only=True, label='ID')
+    id = serializers.CharField(read_only=True, label='ID')
     first_name = serializers.CharField(label='Имя')
     last_name = serializers.CharField(label='Фамилия')
     email = serializers.CharField(label='Почта')
@@ -146,3 +146,71 @@ class LoginSerializer(serializers.Serializer):
     class Meta:
         model = User
         fields = ['email', 'password']
+
+class UserProfileUpdateSerializer(serializers.Serializer):
+    model = User
+
+    first_name = serializers.CharField(label='Имя',
+                                       style={
+                                           "input_type": "text",
+                                           "autofocus": False,
+                                           "autocomplete": "on",
+                                           "required": True,
+                                       },
+                                       error_messages={
+                                           "required": "Обязательно для заполнения",
+                                           "blank": "Укажите имя",
+                                       }
+                                       )
+    last_name = serializers.CharField(label='Фамилия',
+                                      style={
+                                          "input_type": "text",
+                                          "autofocus": False,
+                                          "autocomplete": "on",
+                                          "required": True,
+                                      },
+                                      error_messages={
+                                          "required": "Обязательно для заполнения",
+                                          "blank": "Укажите фамилию",
+                                      }
+                                      )
+    email = serializers.CharField(label='Почта',
+                                  style={
+                                      "input_type": "text",
+                                      "autofocus": False,
+                                      "autocomplete": "on",
+                                      "required": True,
+                                  },
+                                  error_messages={
+                                      "required": "Обязательно для заполнения",
+                                      "blank": "Укажите почту",
+                                  }
+                                  )
+    position = serializers.CharField(label='Должность',
+                                     style={
+                                         "input_type": "text",
+                                         "autofocus": False,
+                                         "autocomplete": "on",
+                                         "required": True,
+                                     },
+                                     error_messages={
+                                         "required": "Обязательно для заполнения",
+                                         "blank": "Укажите должность",
+                                     }
+                                     )
+    profile_photo = serializers.ImageField(label='Фото профиля',
+                                           style={
+                                               "input_type": "text",
+                                               "autofocus": False,
+                                               "autocomplete": "on",
+                                               "required": False,
+                                           },
+                                           error_messages={
+                                               "required": "Обязательно для заполнения",
+                                               "blank": "Фото профиля",
+                                           }
+                                           )
+
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email', 'position', 'profile_photo']
