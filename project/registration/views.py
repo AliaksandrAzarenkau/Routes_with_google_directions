@@ -3,13 +3,14 @@ from django.shortcuts import redirect
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from rest_framework import views, response, exceptions, permissions, status, generics
+from rest_framework.generics import get_object_or_404
 from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 
 
-from .serializers import UserSerializer, LoginSerializer, UserRegisterSerializer
+from .serializers import UserSerializer, LoginSerializer, UserRegisterSerializer, UserEditProfileSerializer, UserPhotoProfileSerializer
 from .services import user_email_selector, create_token
 from .authentication import CustomUserAuthentication
-from .models import User
+from .models import User, UserProfilePhoto
 
 
 class RegistrationAPIVew(generics.ListAPIView):
@@ -166,25 +167,71 @@ class HomePageView(generics.ListAPIView):
         return response.Response(request)
 
 
-class UserEditProfile(generics.RetrieveUpdateAPIView):
+class UserEditProfileAPIView(generics.RetrieveUpdateAPIView):
     queryset = User.objects.all()
-    serializer_class = UserProfileUpdateSerializer
+    serializer_class = UserEditProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
-    template_name = 'current_user.html'
+    template_name = 'user_profile.html'
 
     def get(self, request, *args, **kwargs):
+        """Получение данных профиля текущего пользователя для заполнения шаблона"""
         user = request.user
-        return user
+        if request.accepted_renderer.format == 'html':
+            serializer = self.serializer_class(user)
+            context = {'user': user, 'serializer': serializer}
+            return response.Response(context, template_name=self.template_name)
+        else:
+            return response.Response(status=status.HTTP_200_OK)
+
+    def post(self, request):
+        """Перемычка"""
+        return self.update(request)
 
     def update(self, request, *args, **kwargs):
-        profile_data = validated_data.pop('profile', None)
-        # If we have one
-        if profile_data is not None:
-            # We set address, assuming that you always set address
-            # if you provide profile
-            instance.profile.address = profile_data['address']
-            # And save profile
-            instance.profile.save()
-        # Rest will be handled by DRF
-        return super().update(instance, validated_data)
+        instance = get_object_or_404(self.queryset, pk=request.user.id)
+        serializer = self.serializer_class(instance=instance, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        if request.accepted_renderer.format == 'html':
+            message = "Данные обновлены успешно"
+            messages.success(request, message)
+            return redirect('./user_profile')
+        else:
+            return response.Response(status=status.HTTP_200_OK)
+
+
+class UserPhotoAPIView(generics.RetrieveUpdateAPIView):
+    queryset = UserProfilePhoto.objects.all()
+    serializer_class = UserPhotoProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
+    template_name = 'user_profile.html'
+
+    def get(self, request, *args, **kwargs):
+        """Получение фото текущего пользователя для заполнения шаблона"""
+        user = request.user
+        serializer = self.serializer_class(user)
+        if request.accepted_renderer.format == 'html':
+            context = {'user': user, 'serializer': serializer}
+            return response.Response(context)
+        else:
+            return response.Response(serializer, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        """Перемычка"""
+        return self.update(request)
+
+    def update(self, request, *args, **kwargs):
+        instance = get_object_or_404(self.queryset, pk=request.user.email_id)
+        serializer = self.serializer_class(instance=instance, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        if request.accepted_renderer.format == 'html':
+            message = "Фото обновлено успешно"
+            messages.success(request, message)
+            return redirect('./user_profile')
+        else:
+            return response.Response(status=status.HTTP_200_OK)

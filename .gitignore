@@ -23,3 +23,4 @@
 /project/registration/migrations/0002_remove_user_avatar_remove_user_created_and_more.py
 /project/registration/migrations/0003_user_position_user_profile_photo.py
 /project/registration/static/profile_images/
+/project/registration/migrations/0006_alter_user_profile_photo_userprofilephoto.py
