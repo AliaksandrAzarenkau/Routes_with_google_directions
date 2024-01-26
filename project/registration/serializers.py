@@ -89,6 +89,7 @@ class UserRegisterSerializer(serializers.Serializer):
                                      )
 
     def create(self, validated_data):
+        """Создание профиля на основе полученных данных с дефолтным аватаром"""
         user = User.objects.create(
             first_name=validated_data.get('first_name'),
             last_name=validated_data.get('last_name'),
@@ -96,6 +97,11 @@ class UserRegisterSerializer(serializers.Serializer):
             password=validated_data.get('password'),
             position=validated_data.get('position'),
         )
+
+        photo = UserProfilePhoto.objects.create(
+            email_id=user.id
+        )
+        photo.save()
 
         return user
 
@@ -203,6 +209,7 @@ class UserEditProfileSerializer(serializers.Serializer):
 class UserPhotoProfileSerializer(serializers.Serializer):
     model = UserProfilePhoto
 
+    email_id = serializers.PKOnlyObject
     profile_photo = serializers.ImageField(label='Фото профиля',
                                            style={
                                                "input_type": "text",
@@ -216,6 +223,12 @@ class UserPhotoProfileSerializer(serializers.Serializer):
                                            }
                                            )
 
+    def get_photo(self, request):
+        data = UserProfilePhoto.objects.filter(email_id=request).first()
+        resp = data.profile_photo
+
+        return resp
+
     def update(self, instance, validated_data):
         instance.profile_photo = validated_data.get('profile_photo', instance.profile_photo)
         instance.save()
@@ -223,4 +236,4 @@ class UserPhotoProfileSerializer(serializers.Serializer):
 
     class Meta:
         model = UserProfilePhoto
-        fields = ['profile_photo']
+        fields = ['profile_photo', 'email_id']

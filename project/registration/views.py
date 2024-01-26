@@ -1,13 +1,14 @@
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib import messages
+from django.views.generic import base
 from rest_framework import views, response, exceptions, permissions, status, generics
 from rest_framework.generics import get_object_or_404
 from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 
-
-from .serializers import UserSerializer, LoginSerializer, UserRegisterSerializer, UserEditProfileSerializer, UserPhotoProfileSerializer
+from .serializers import UserSerializer, LoginSerializer, UserRegisterSerializer, UserEditProfileSerializer, \
+    UserPhotoProfileSerializer
 from .services import user_email_selector, create_token
 from .authentication import CustomUserAuthentication
 from .models import User, UserProfilePhoto
@@ -202,36 +203,46 @@ class UserEditProfileAPIView(generics.RetrieveUpdateAPIView):
             return response.Response(status=status.HTTP_200_OK)
 
 
-class UserPhotoAPIView(generics.RetrieveUpdateAPIView):
-    queryset = UserProfilePhoto.objects.all()
-    serializer_class = UserPhotoProfileSerializer
-    permission_classes = [permissions.IsAuthenticated]
+# class UserPhotoAPIView(generics.RetrieveUpdateAPIView):
+#     queryset = UserProfilePhoto.objects.all()
+#     serializer_class = UserPhotoProfileSerializer
+#     permission_classes = [permissions.IsAuthenticated]
+#     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
+#     template_name = 'user_profile.html'
+#
+#     def get(self, request, *args, **kwargs):
+#         """Получение фото текущего пользователя для заполнения шаблона"""
+#         pk = request.user.id
+#         profile_photo = self.serializer_class.get_photo(request, pk)
+#         return profile_photo
+# serializer = self.serializer_class(request)
+# if request.accepted_renderer.format == 'html':
+#     context = {'user': request, 'serializer': serializer}
+#     return response.Response(context)
+# else:
+#     return response.Response(serializer, status=status.HTTP_200_OK)
+
+# def post(self, request):
+#     """Перемычка"""
+#     return self.update(request)
+#
+# def update(self, request, *args, **kwargs):
+#     instance = get_object_or_404(self.queryset, pk=request.user.email_id)
+#     serializer = self.serializer_class(instance=instance, data=request.data)
+#     serializer.is_valid(raise_exception=True)
+#     serializer.save()
+#
+#     if request.accepted_renderer.format == 'html':
+#         message = "Фото обновлено успешно"
+#         messages.success(request, message)
+#         return redirect('./user_profile')
+#     else:
+#         return response.Response(status=status.HTTP_200_OK)
+
+class UserPhotoView(base.View):
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
-    template_name = 'user_profile.html'
 
-    def get(self, request, *args, **kwargs):
-        """Получение фото текущего пользователя для заполнения шаблона"""
-        user = request.user
-        serializer = self.serializer_class(user)
-        if request.accepted_renderer.format == 'html':
-            context = {'user': user, 'serializer': serializer}
-            return response.Response(context)
-        else:
-            return response.Response(serializer, status=status.HTTP_200_OK)
+    def get(self, request):
+        resp = UserPhotoProfileSerializer.get_photo(request, request.user.id)
 
-    def post(self, request):
-        """Перемычка"""
-        return self.update(request)
-
-    def update(self, request, *args, **kwargs):
-        instance = get_object_or_404(self.queryset, pk=request.user.email_id)
-        serializer = self.serializer_class(instance=instance, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-
-        if request.accepted_renderer.format == 'html':
-            message = "Фото обновлено успешно"
-            messages.success(request, message)
-            return redirect('./user_profile')
-        else:
-            return response.Response(status=status.HTTP_200_OK)
+        return HttpResponse(resp)
