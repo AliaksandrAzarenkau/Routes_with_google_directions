@@ -10,5 +10,5 @@ urlpatterns = [
     path('logout', views.LogoutAPIView.as_view(), name='logout'),
     path('current_user', views.GetCurrentUserAPIVew.as_view(), name='current_user'),
     path('user_profile', views.UserEditProfileAPIView.as_view(), name='user_profile'),
-    path('user_profile_photo', views.UserPhotoAPIView.as_view(), name='user_profile_photo'),
+    path('user_profile_photo', views.UserPhotoView.as_view(), name='user_profile_photo'),
 ]

@@ -2,33 +2,60 @@
 {% load rest_framework %}
 {% load bootstrap5 %}
 
-
-
 {% block content %}
-<div>
+
+<div class="container py-5 d-flex flex-wrap align-items-center">
 <div class="container text-center">
-  <div class="row g-2">
-    <div class="col-6">
-      <div class="p-3">Тут будет какой-то текст</div>
+  <div class="row g-2 align-items-center justify-content-center">
+    <div class="col-6 col-sm-5">
+      <div class="p-3">
+        <p class="h1">Наша основная миссия</p>
+          <p class="h3">безопасная доставка грузов</p>
+      </div>
     </div>
-    <div class="col-6">
-      <div class="p-3">Тут будет какая-то картинка</div>
+    <div class="col-6 col-sm-5">
+      <div class="p-3">
+        <img width="350" height="350" src="../static/images/us_1.jpg" alt="">
+      </div>
     </div>
-    <div class="col-6">
-      <div class="p-3">Тут будет какой-то другой текст</div>
+    <div class="col-6 col-sm-5">
+      <div class="p-3">
+        <img width="350" height="350" src="../static/images/us_2.jpg" alt="">
+      </div>
     </div>
-    <div class="col-6">
-      <div class="p-3">Тут будет какая-то другая картинка</div>
+    <div class="col-6 col-sm-5">
+      <div class="p-3">
+        <p class="h2">Каждый заказ для нас – задача, а не проблема</p>
+          <p>Мы отправим любой груз в любую точку страны, организуем ваш переезд, расширим границы присутствия ваших товаров, доставив их до широкого круга покупателей в кратчайшие сроки.</p>
+      </div>
     </div>
-      <div class="col-6">
-      <div class="p-3">Возможно будет что-то ещё</div>
+    <div class="col-6 col-sm-5">
+      <div class="p-3">
+        <p class="h2">Экспресс-доставка – </p>
+          <p class="h2">особое направление</p>
+          <p>В отличие от работы компаний, акцентирующих свое внимание на транспортировке сборных и крупногабаритных грузов, служба доставки в первую очередь уделяет внимание минимизации сроков перевозки.</p>
+      </div>
     </div>
-    <div class="col-6">
-      <div class="p-3">... а может и нет</div>
+    <div class="col-6 col-sm-5">
+      <div class="p-3">
+        <img width="350" height="350" src="../static/images/us_3.jpg" alt="">
+      </div>
     </div>
   </div>
 </div>
 </div>
+
+<footer>
+    <div class="container py-4 row-cols-2 d-flex flex-wrap align-items-center text-center border-top ">
+        <div class="col text-start">
+            <p class="col-md-4 mb-0 text-muted">© 2024 Company, Inc</p>
+        </div>
+        <div class="col text-end">
+            <a href="/registration/home" class="nav-link px-2 text-muted">О нас</a>
+        </div>
+    </div>
+</footer>
+
 {% endblock %}
 
 
