@@ -240,6 +240,7 @@ class UserEditProfileAPIView(generics.RetrieveUpdateAPIView):
 #         return response.Response(status=status.HTTP_200_OK)
 
 class UserPhotoView(base.View):
+    permission_classes = [permissions.IsAuthenticated]
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
 
     def get(self, request):

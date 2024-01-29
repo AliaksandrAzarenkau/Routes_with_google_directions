@@ -83,3 +83,54 @@ class ClientObjectsProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = ClientObjectsProfile
         fields = '__all__'
+
+
+class ClientListSerializer(serializers.Serializer):
+    organisation_name = serializers.CharField(
+        max_length=50,
+        required=True,
+        style={
+            "input_type": "text",
+            "autofocus": False,
+            "autocomplete": "on",
+            "required": True,
+        },
+        error_messages={
+            "required": "Обязательно для заполнения",
+            "blank": "Название организации необходимо",
+        },
+        label='Наименование клиента*'
+    )
+    phone = serializers.CharField(
+        max_length=11,
+        required=True,
+        style={
+            "input_type": "text",
+            "autofocus": False,
+            "autocomplete": "on",
+            "required": True,
+        },
+        error_messages={
+            "required": "Обязательно для заполнения",
+            "blank": "Номер телефона необходим",
+        },
+        label='Номер телефона*'
+    )
+
+    def get_clients(self):
+        """Список всех клиентов"""
+        clients_set = Client.objects.all()
+
+        return clients_set
+
+    def get_objects(self, pk):
+        """Список всех объектов одного клиента"""
+        resp = {'client_name': Client.objects.get(id=pk),
+                'client_obj': ClientObjectsProfile.objects.filter(organisation_name_id=pk)}
+
+        return resp
+
+    class Meta:
+        model = Client
+        fields_client = ['organisation_name', 'phone']
+

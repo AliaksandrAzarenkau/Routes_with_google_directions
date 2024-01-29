@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load rest_framework %}
+{% load bootstrap5 %}
+
+{% block content %}
+
+{% for message in messages %}
+<div class="alert alert-secondary" role="alert">
+    {{message}}
+</div>
+{% endfor %}
+
+<div class="container py-4 row-cols-1 d-flex flex-wrap align-items-center justify-content-center">
+        <div class="card">
+            <div class="col-md-auto">
+            {% csrf_token %}
+            {% for obj in client_obj %}
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="card-title">Клиент: {{ client_name.organisation_name }}</h5>
+                    <p class="card-text">Телефон: {{ obj.phone }}</p>
+                    <p class="card-text">Страна: {{ obj.country }}</p>
+                    <p class="card-text">Город: {{ obj.city }}</p>
+                    <p class="card-text">Улица: {{ obj.street }}</p>
+                    <p class="card-text">Дом/строение: {{ obj.building }}</p>
+                  </div>
+                </div>
+                <div class="col py-2"></div>
+            {% endfor %}
+            </div>
+        </div>
+</div>
+
+
+<footer>
+    <div class="container py-4 row-cols-2 d-flex flex-wrap align-items-center text-center border-top fixed-bottom">
+        <div class="col text-start">
+            <p class="col-md-4 mb-0 text-muted">© 2024 Company, Inc</p>
+        </div>
+        <div class="col text-end">
+            <a href="/registration/home" class="nav-link px-2 text-muted">О нас</a>
+        </div>
+    </div>
+</footer>
+
+{% endblock %}
