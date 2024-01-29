@@ -1,19 +1,20 @@
 {% load static %}
 {% load rest_framework %}
 {% load bootstrap5 %}
+
 <html lang="ru">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple logistic</title>
+    <title>logistics logistics</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
         <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
           rel="stylesheet">
-    <link href="../static/style.css" rel="stylesheet">
+    <link href="{% static 'style.css' %}" rel="stylesheet">
 </head>
 
 <body class="container">
@@ -21,10 +22,11 @@
 <header>
 
     {% if request.user.is_authenticated %}
+    {% csrf_token %}
     <div class="container row row-cols-3 d-flex justify-content-between align-items-center border-bottom">
         <div class="col">
             <a href="/registration/home">
-                <img width="100" height="100" src="../static/images/logo.png" alt="#">
+                <img width="100" height="100" src="{% static 'images/logo.png' %}" alt="#">
             </a>
         </div>
         <div class="col">
@@ -40,7 +42,7 @@
                     </a>
                 </div>
                 <div class="col">
-                    <a href="#" class="nav-link">
+                    <a href="/client/client_list" class="nav-link">
                         <button type="button" class="btn btn-light">Создать маршрут</button>
                     </a>
                 </div>
@@ -70,6 +72,7 @@
     {% endif %}
 
     {% if not request.user.is_authenticated %}
+    {% csrf_token %}
     <div class="container row row-cols-3 d-flex justify-content-between align-items-center border-bottom">
         <div class="col">
             <a href="/registration/home">

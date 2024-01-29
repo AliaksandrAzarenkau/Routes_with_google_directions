@@ -1,4 +1,5 @@
-from rest_framework import status, generics
+from django.http import HttpResponse
+from rest_framework import status, generics, permissions
 from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
@@ -6,7 +7,7 @@ from django.shortcuts import redirect
 from django.contrib import messages
 
 from .models import Client, ClientObjectsProfile
-from .serializers import ClientCreateSerializer, ClientObjectsProfileSerializer
+from .serializers import ClientCreateSerializer, ClientObjectsProfileSerializer, ClientListSerializer
 
 
 class ClientAPIVew(generics.ListAPIView):
@@ -41,15 +42,6 @@ class ClientAPIVew(generics.ListAPIView):
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-#     def update(self, request):
-#         """Обновление данных клиента"""
-#         serializer_data = request.data.get('client', {})
-#         serializer = self.serializer_class(request.user, data=serializer_data, partial=True)
-#         serializer.is_valid(raise_exception=True)
-#         serializer.save()
-#
-#         return Response(serializer.data, status=status.HTTP_200_OK)
-
 
 class ClientProfileAPIVew(generics.ListAPIView):
     queryset = ClientObjectsProfile.objects.all()
@@ -82,12 +74,30 @@ class ClientProfileAPIVew(generics.ListAPIView):
             return redirect('./client_profile')
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-#
-#     def update(self, request):
-#         """Обновление данных карточки клиента"""
-#         serializer_data = request.data.get('client', {})
-#         serializer = self.serializer_class(request.user, data=serializer_data, partial=True)
-#         serializer.is_valid(raise_exception=True)
-#         serializer.save()
-#
-#         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ClientListAPIView(generics.ListAPIView):
+    serializer_class = ClientListSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
+    template_name = 'client_list.html'
+
+    def get(self, request, *args, **kwargs):
+        """Получаем список всех клиентов"""
+        clients = self.serializer_class.get_clients(request)
+        context = {'clients': clients}
+
+        return Response(context, template_name=self.template_name)
+
+
+class ClientObjectsListAPIView(generics.ListAPIView):
+    serializer_class = ClientListSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
+    template_name = 'client_objects_list.html'
+
+    def get(self, request, pk):
+        data = self.serializer_class.get_objects(request, pk=pk)
+        context = {'client_name': data['client_name'], 'client_obj': data['client_obj']}
+
+        return Response(context, template_name=self.template_name)

@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 
 class Client(models.Model):
@@ -7,11 +8,14 @@ class Client(models.Model):
     created = models.DateTimeField(auto_now=True, verbose_name='Дата создания')
     updated = models.DateTimeField(auto_now=True, verbose_name='Дата обновления данных')
 
+    def get_absolute_url(self):
+        return reverse('objects', kwargs={'pk': self.id})
+
 
 class ClientObjectsProfile(models.Model):
     organisation_name = models.ForeignKey(
                                           Client,
-                                          on_delete=models.CASCADE,
+                                          on_delete=models.DO_NOTHING,
                                           max_length=50,
                                           verbose_name='Наименование клиента'
                                          )
