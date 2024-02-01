@@ -1,11 +1,13 @@
-from django.http import HttpResponse
 from rest_framework import status, generics, permissions
 from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404, render
 from django.contrib import messages
 
+import os
+
+from route.serializers import CartAddProductSerializer
 from .models import Client, ClientObjectsProfile
 from .serializers import ClientCreateSerializer, ClientObjectsProfileSerializer, ClientListSerializer
 
@@ -101,3 +103,19 @@ class ClientObjectsListAPIView(generics.ListAPIView):
         context = {'client_name': data['client_name'], 'client_obj': data['client_obj']}
 
         return Response(context, template_name=self.template_name)
+
+
+def product_detail(request, pk):
+    product = get_object_or_404(
+        ClientObjectsProfile,
+        id=pk,
+        available=True
+    )
+    serializer = CartAddProductSerializer()
+    return (render
+            (request,
+             'detail.html',
+             {
+                 'product': product,
+                 'cart_product_form': serializer})
+            )

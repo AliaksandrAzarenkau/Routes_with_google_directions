@@ -13,6 +13,7 @@
 <div class="container my-3 py-3">
     <div class="row">
         <div class="row justify-content-md-center">
+            <div class="col"></div>
             <div class="col-lg-6">
                 <div class="card" id="basic-info">
                     <div class="card-header mt-0">
@@ -31,13 +32,14 @@
                     </div>
                 </div>
             </div>
+            <div class="col justify-content-end">
+                <div class="container justify-content-end">
+                    <img src="{% url 'user_profile_photo' %}" width="200" height="200" alt="#">
+<!--                    <a class="btn btn-primary my-3" href="#" role="button">Сменить фото</a>-->
+                </div>
+            </div>
         </div>
     </div>
-</div>
-<div>
-    <form method="post">
-    </form>
-    <img src="{% url 'user_profile_photo' %}" alt="#">
 </div>
 
 <footer>

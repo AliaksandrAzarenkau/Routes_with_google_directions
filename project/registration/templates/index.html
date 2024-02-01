@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load rest_framework %}
 {% load bootstrap5 %}
+{% load static %}
 
 {% block content %}
 
@@ -15,12 +16,12 @@
     </div>
     <div class="col-6 col-sm-5">
       <div class="p-3">
-        <img width="350" height="350" src="../static/images/us_1.jpg" alt="">
+        <img width="350" height="350" src="{% static 'images/us_1.jpg' %}" alt="#">
       </div>
     </div>
     <div class="col-6 col-sm-5">
       <div class="p-3">
-        <img width="350" height="350" src="../static/images/us_2.jpg" alt="">
+        <img width="350" height="350" src="{% static 'images/us_2.jpg' %}" alt="#">
       </div>
     </div>
     <div class="col-6 col-sm-5">
@@ -38,7 +39,7 @@
     </div>
     <div class="col-6 col-sm-5">
       <div class="p-3">
-        <img width="350" height="350" src="../static/images/us_3.jpg" alt="">
+        <img width="350" height="350" src="{% static 'images/us_3.jpg' %}" alt="">
       </div>
     </div>
   </div>
@@ -57,10 +58,3 @@
 </footer>
 
 {% endblock %}
-
-
-
-
-
-
-
