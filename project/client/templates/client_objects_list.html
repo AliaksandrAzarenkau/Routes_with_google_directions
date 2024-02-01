@@ -5,7 +5,8 @@
 {% block content %}
 
 {% for message in messages %}
-<div class="alert alert-secondary" role="alert">
+<div class="alert alert-secondary" role="alert" xmlns:route="http://www.w3.org/1999/xhtml"
+     xmlns:route="http://www.w3.org/1999/xhtml">
     {{message}}
 </div>
 {% endfor %}
@@ -24,6 +25,12 @@
                     <p class="card-text">Улица: {{ obj.street }}</p>
                     <p class="card-text">Дом/строение: {{ obj.building }}</p>
                   </div>
+                    <form  method="post" action="{% url 'cart_add' obj.id %}">
+                        {{ cart_product_form }}
+                        {% csrf_token %}
+                        <input type="submit" value="Add to cart">
+
+                    </form>
                 </div>
                 <div class="col py-2"></div>
             {% endfor %}

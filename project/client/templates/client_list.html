@@ -11,20 +11,27 @@
 {% endfor %}
 
 <div class="container py-4 row-cols-1 d-flex flex-wrap align-items-center justify-content-center">
-    <div class="col-md-auto">
-    {% csrf_token %}
-    {% for client in clients %}
-        <div class="py-2">
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">Клиент: {{ client.organisation_name }}</h5>
-                <p class="card-text">Телефон: {{ client.phone }}</p>
-              </div>
-                <a class="btn btn-outline-primary" href="{{ client.get_absolute_url }}">Объекты клиента</a>
-            </div>
-        </div>
-    {% endfor %}
-    </div>
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Контрагент</th>
+          <th scope="col">Телефон</th>
+          <th scope="col">Объекты</th>
+        </tr>
+      </thead>
+      <tbody>
+          {% csrf_token %}
+          {% for client in clients %}
+        <tr>
+          <th scope="row">{{ client.id }}</th>
+          <td>{{ client.organisation_name }}</td>
+          <td>{{ client.phone }}</td>
+          <td><a class="btn btn-outline-primary" href="{{ client.get_absolute_url }}">Объекты клиента</a></td>
+        </tr>
+          {% endfor %}
+      </tbody>
+    </table>
 </div>
 
 <footer>

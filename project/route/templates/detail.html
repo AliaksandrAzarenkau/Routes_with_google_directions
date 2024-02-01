@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+{% load rest_framework %}
+{% load bootstrap5 %}
+
+{% block content %}
+
+<table class="table border">
+  <thead class="text-center border border-black">
+    <tr>
+        <th scope="col" class="text-center border">Контрагент</th>
+        <th scope="col" class="text-center border">Телефон</th>
+        <th scope="col" class="text-center border">Страна</th>
+        <th scope="col" class="text-center border">Город</th>
+        <th scope="col" class="text-center border">Улица</th>
+        <th scope="col" class="text-center border">Дом/строение</th>
+        <th scope="col" class="text-center border">Действие</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+        <td>
+            {% for client in  clients %}
+                <p>{{ client.organisation_name }}</p>
+            {% endfor %}
+        </td>
+        <td>
+            {% for point in addresses %}
+                <p>{{ point.phone }}</p>
+            {% endfor %}
+        </td>
+        <td>
+            {% for point in addresses %}
+                <p>{{ point.country }}</p>
+            {% endfor %}
+        </td>
+        <td>
+            {% for point in addresses %}
+                <p>{{ point.city }}</p>
+            {% endfor %}
+        </td>
+        <td>
+            {% for point in addresses %}
+                <p>{{ point.street }}</p>
+            {% endfor %}
+        </td>
+        <td>
+            {% for point in addresses %}
+                <p>{{ point.building }}</p>
+            {% endfor %}
+        </td>
+        <td class="text-center">
+            {% for item in cart %}
+                {% with product=item.product %}
+                <form  method="post" action="{% url 'cart_remove' product.id %}">
+                    {{ cart_product_form }}
+                    {% csrf_token %}
+                    <input id="remove_btn" type="submit" value="Удалить">
+                </form>
+                {% endwith %}
+            {% endfor %}
+        </td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="container p-4 text-center">
+    <div class="row gx-5">
+        <div class="col"></div>
+        <div class="col">
+              <p class="text-right p-2">
+            <a class="btn btn btn-success" href="{% url 'route_save' %}" role="button">Сохранить маршрут</a>
+            </p>
+        </div>
+        <div class="col">
+            <p class="p-3"> Общее количество: {{ quantity }} </p>
+        </div>
+    </div>
+</div>
+
+<div class="container d-flex p-4 justify-content-md-center border-top">
+    <div id="sidebar">
+        <div>
+            <select class="d-none" id="start">
+                <option selected="selected" value="Беларусь, Минск, Инженерная 10"></option>
+            </select>
+            <select class="d-none" multiple id="waypoints">
+                {% for point in addresses %}
+                <option selected="selected" value="{{ point.country }}, {{ point.city }}, {{ point.street }}, {{ point.building }}"></option>
+                {% endfor %}
+            </select>
+            <select class="d-none" id="end">
+                <option selected="selected" value="Беларусь, Минск, Инженерная 10"></option>
+            </select>
+            <input id="submit" class="btn btn-outline-success" type="submit" value="Проложить маршрут">
+            <div class="d-none" id="directions-panel"></div>
+        </div>
+    </div>
+</div>
+
+<div class="container gy-4 h-100 w-100 align-items-center" id="map"></div>
+
+<script>
+function initMap() {
+  const directionsService = new google.maps.DirectionsService();
+  const directionsRenderer = new google.maps.DirectionsRenderer();
+  const map = new google.maps.Map(document.getElementById("map"), {
+    zoom: 7,
+    center: { lat: 53.900392813388905, lng: 27.55800381910654 },
+  });
+
+  directionsRenderer.setMap(map);
+  document.getElementById("submit").addEventListener("click", () => {
+    calculateAndDisplayRoute(directionsService, directionsRenderer);
+  });
+}
+
+function calculateAndDisplayRoute(directionsService, directionsRenderer) {
+  const waypts = [];
+  const checkboxArray = document.getElementById("waypoints");
+
+  for (let i = 0; i < checkboxArray.length; i++) {
+    if (checkboxArray.options[i].selected) {
+      waypts.push({
+        location: checkboxArray[i].value,
+        stopover: true,
+      });
+    }
+  }
+
+  directionsService
+    .route({
+      origin: document.getElementById("start").value,
+      destination: document.getElementById("end").value,
+      waypoints: waypts,
+      optimizeWaypoints: true,
+      travelMode: google.maps.TravelMode.DRIVING,
+    })
+    .then((response) => {
+      directionsRenderer.setDirections(response);
+
+      const route = response.routes[0];
+      const summaryPanel = document.getElementById("directions-panel");
+
+      summaryPanel.innerHTML = "";
+
+      // For each route, display summary information.
+      for (let i = 0; i < route.legs.length; i++) {
+        const routeSegment = i + 1;
+
+        summaryPanel.innerHTML +=
+          "<b>Route Segment: " + routeSegment + "</b><br>";
+        summaryPanel.innerHTML += route.legs[i].start_address + " to ";
+        summaryPanel.innerHTML += route.legs[i].end_address + "<br>";
+        summaryPanel.innerHTML += route.legs[i].distance.text + "<br><br>";
+      }
+    })
+    .catch((e) => window.alert("Directions request failed due to " + status));
+}
+
+window.initMap = initMap;
+</script>
+
+<script async
+    src="{{ url }}">
+</script>
+
+<footer>
+    <div class="container py-4 row-cols-2 d-flex flex-wrap align-items-center text-center border-top">
+        <div class="col text-start">
+            <p class="col-md-4 mb-0 text-muted">© 2024 Company, Inc</p>
+        </div>
+        <div class="col text-end">
+            <a href="/registration/home" class="nav-link px-2 text-muted">О нас</a>
+        </div>
+    </div>
+</footer>
+
+{% endblock %}
