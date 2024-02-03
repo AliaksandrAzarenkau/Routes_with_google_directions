@@ -1,12 +1,14 @@
+from dotenv import load_dotenv
+import os
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 
+
 from client.models import ClientObjectsProfile
 from client.serializers import ClientListSerializer
-from route.serializers import RouteCreateSerializer
+from route.models import Route
+from route.serializers import RouteCreateSerializer, RouteArchiveSerializer
 from .cart import Cart
-from dotenv import load_dotenv
-import os
 
 
 @require_POST
@@ -14,7 +16,7 @@ def cart_add(request, product_id):
     cart = Cart(request)
     product = get_object_or_404(ClientObjectsProfile, id=product_id)
     cart.add(product=product)
-    return redirect('/client/client_list')
+    return redirect('client_objects_list')
 
 
 def cart_remove(request, product_id):
@@ -27,6 +29,15 @@ def cart_remove(request, product_id):
 def cart_detail(request):
 
     cart = Cart(request)
+    ids = cart.get_ids()
+    print(ids)
+
+    if len(ids) == 0:
+        return render(
+            request,
+            'detail.html',
+            {'messages': 'В маршруте пока нет точек'})
+
     ids = cart.get_ids()
     data = ClientListSerializer.get_objects(request, pk=None, ids=ids)
     total_quantity = len(data['client_obj'])
@@ -62,3 +73,15 @@ def route_save(request):
     cart.clear()
 
     return redirect('client_objects_list')
+
+
+def route_archive(request):
+    routes = Route.objects.all()
+
+    return render(request, template_name='route_archive.html', context={'data': routes})
+
+
+def route_archive_detail(request, pk):
+    serializer = RouteArchiveSerializer.get_details(request, pk)
+
+    return render(request, template_name='archive_detail.html', context={'objects': serializer})

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load rest_framework %}
+{% load bootstrap5 %}
+
+{% block content %}
+
+{% for message in messages %}
+<div class="alert alert-secondary" role="alert">
+    {{message}}
+</div>
+{% endfor %}
+
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">Страна</th>
+        <th scope="col">Город</th>
+        <th scope="col">Улица</th>
+        <th scope="col">Дом/строение</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for object in objects %}
+    <tr>
+        <td>{{ object.country }}</td>
+        <td>{{ object.city }}</td>
+        <td>{{ object.street }}</td>
+        <td>{{ object.building }}</td>
+        <td>
+            <form  method="post" action="{% url 'cart_add' object.id %}">
+                {{ cart_product_form }}
+                {% csrf_token %}
+                <input type="submit" value="Добавить в маршрут">
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<footer>
+    <div class="container py-4 row-cols-2 d-flex flex-wrap align-items-center text-center border-top fixed-bottom">
+        <div class="col text-start">
+            <p class="col-md-4 mb-0 text-muted">© 2024 Company, Inc</p>
+        </div>
+        <div class="col text-end">
+            <a href="/registration/home" class="nav-link px-2 text-muted">О нас</a>
+        </div>
+    </div>
+</footer>
+
+{% endblock %}
