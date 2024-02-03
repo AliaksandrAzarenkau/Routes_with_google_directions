@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load rest_framework %}
+{% load bootstrap5 %}
+
+{% block content %}
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Автор</th>
+      <th scope="col">Дата</th>
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for route in data %}
+    <tr>
+      <th scope="row">{{ route.id }}</th>
+      <td>{{ route.email }}</td>
+      <td>{{ route.created }}</td>
+      <td><a href="{{ route.get_absolute_url }}" class="list-group-item list-group-item-action text-center">Детали заказа</a></td>
+    </tr>
+     {% endfor %}
+  </tbody>
+</table>
+
+<footer>
+    <div class="container py-4 row-cols-2 d-flex flex-wrap align-items-center text-center border-top fixed-bottom">
+        <div class="col text-start">
+            <p class="col-md-4 mb-0 text-muted">© 2024 Company, Inc</p>
+        </div>
+        <div class="col text-end">
+            <a href="/registration/home" class="nav-link px-2 text-muted">О нас</a>
+        </div>
+    </div>
+</footer>
+
+{% endblock %}
