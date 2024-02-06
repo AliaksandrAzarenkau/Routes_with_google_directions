@@ -2,9 +2,8 @@ import dataclasses
 import datetime
 import jwt
 from django.conf import settings
-from . import models
 
-from .models import User
+from registration import models
 
 
 @dataclasses.dataclass
@@ -38,9 +37,10 @@ def create_user(user_dc):
 
 
 def user_email_selector(email):
-    user = User.objects.filter(email=email).first()
-
-    return user
+    try:
+        user = models.User.objects.get(email=email)
+        return user
+    except: return None
 
 
 def create_token(user_id):

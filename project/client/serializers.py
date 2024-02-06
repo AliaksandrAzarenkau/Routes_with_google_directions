@@ -18,7 +18,7 @@ class ClientCreateSerializer(serializers.ModelSerializer):
             "required": "Обязательно для заполнения",
             "blank": "Название организации необходимо",
         },
-        label='Наименование клиента*'
+        label='Наименование клиента'
     )
     phone = serializers.CharField(
         max_length=11,
@@ -33,14 +33,8 @@ class ClientCreateSerializer(serializers.ModelSerializer):
             "required": "Обязательно для заполнения",
             "blank": "Номер телефона необходим",
         },
-        label='Номер телефона*'
+        label='Номер телефона с кодом оператора'
     )
-
-    # def update(self, instance, validated_data):
-    #     """Обновление данных клиента"""
-    #     instance.organisation_name = validated_data.get('organisation_name', instance.organisation_name)
-    #     instance.phone = validated_data.get('phone', instance.phone)
-    #     return instance
 
     class Meta:
         model = Client
@@ -48,17 +42,87 @@ class ClientCreateSerializer(serializers.ModelSerializer):
 
 
 class ClientObjectsProfileSerializer(serializers.ModelSerializer):
+    clients = Client.objects.all()
+
+    CLIENT_CHOICES = []
+    for client in clients:
+        CLIENT_CHOICES.append(client.organisation_name)
+
+    organisation_name = serializers.ChoiceField(CLIENT_CHOICES, label='Контрагент')
+
+    phone = serializers.CharField(label='Номер телефона с кодом оператора',
+                                  style={
+                                      "input_type": "text",
+                                      "autofocus": False,
+                                      "autocomplete": "off",
+                                      "required": True,
+                                  },
+                                  )
+    country = serializers.CharField(label='Страна',
+                                    style={
+                                        "input_type": "text",
+                                        "autofocus": False,
+                                        "autocomplete": "off",
+                                        "required": False,
+                                    },
+                                    )
+    city = serializers.CharField(label='Город',
+                                 style={
+                                     "input_type": "text",
+                                     "autofocus": False,
+                                     "autocomplete": "off",
+                                     "required": True,
+                                 },
+                                 )
+    street = serializers.CharField(label='Улица',
+                                   style={
+                                       "input_type": "text",
+                                       "autofocus": False,
+                                       "autocomplete": "off",
+                                       "required": True,
+                                   },
+                                   )
+    building = serializers.CharField(label='Дом/строение',
+                                     style={
+                                         "input_type": "text",
+                                         "autofocus": False,
+                                         "autocomplete": "off",
+                                         "required": True,
+                                     },
+                                     )
+
+    # def get(self):
+    #     clients = Client.objects.all()
+    #
+    #     CLIENT_CHOICES = []
+    #     for client in clients:
+    #         CLIENT_CHOICES.append([client.id, client.organisation_name])
+    #
+    #     organisation_name = serializers.ChoiceField(CLIENT_CHOICES)
+    #
+    #     data = {'organisation_name': organisation_name,
+    #             'phone': ClientObjectsProfile.phone,
+    #             'country': ClientObjectsProfile.country,
+    #             'city': ClientObjectsProfile.city,
+    #             'street': ClientObjectsProfile.street,
+    #             'building': ClientObjectsProfile.building
+    #             }
+    #
+    #     return data
 
     def create(self, request_data):
         """Создание карточки клиента"""
+        org_id = int(request_data.get('organisation_name'))
+        organisation_name_id = Client.objects.get(id=org_id)
         country = request_data.get('country'),
         city = request_data.get('city'),
         street = request_data.get('street'),
         building = request_data.get('building'),
         latlon = get_latlon([country, city, street, building])
+        print(f'{organisation_name_id}|{country}|{city}|{street}|{building}|{latlon}')
 
         response = ClientObjectsProfile.objects.create(
-            organisation_name=request_data.get('organisation_name'),
+            organisation_name=organisation_name_id,
             phone=request_data.get('phone'),
             country=country[0],
             city=city[0],
@@ -68,17 +132,6 @@ class ClientObjectsProfileSerializer(serializers.ModelSerializer):
             lon=latlon[1]
         )
         return response
-
-    # def update(self, instance, validated_data):
-    #     """Обновление карточки клиента"""
-    #     instance.organisation_name = validated_data.get('organisation_name', instance.organisation_name)
-    #     instance.phone = validated_data.get('phone', instance.phone)
-    #     instance.country = validated_data.get('country', instance.country)
-    #     instance.city = validated_data.get('city', instance.city)
-    #     instance.street = validated_data.get('street', instance.street)
-    #     instance.building = validated_data.get('building', instance.building)
-    #     instance.geolocation = validated_data.get('geolocation', instance.geolocation)
-    #     return instance
 
     class Meta:
         model = ClientObjectsProfile

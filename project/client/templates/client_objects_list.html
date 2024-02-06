@@ -19,7 +19,9 @@
                 <div class="card">
                   <div class="card-body">
                     <h5 class="card-title">Клиент: {{ client_name.organisation_name }}</h5>
-                    <p class="card-text">Телефон: {{ obj.phone }}</p>
+                    <p class="card-text">
+                        <a href="tel:+375{{ obj.phone }}" class="link-success link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">+375{{ obj.phone }}</a>
+                    </p>
                     <p class="card-text">Страна: {{ obj.country }}</p>
                     <p class="card-text">Город: {{ obj.city }}</p>
                     <p class="card-text">Улица: {{ obj.street }}</p>
@@ -28,7 +30,7 @@
                     <form  method="post" action="{% url 'cart_add' obj.id %}">
                         {{ cart_product_form }}
                         {% csrf_token %}
-                        <input type="submit" value="Add to cart">
+                        <input type="submit" value="Добавить в маршрут">
                     </form>
                 </div>
                 <div class="col py-2"></div>

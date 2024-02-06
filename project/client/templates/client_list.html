@@ -26,7 +26,9 @@
         <tr>
           <th scope="row">{{ client.id }}</th>
           <td>{{ client.organisation_name }}</td>
-          <td>{{ client.phone }}</td>
+          <td>
+              <p><a href="tel:+375{{ client.phone }}" class="link-success link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">+375{{ client.phone }}</a></p>
+          </td>
           <td><a class="btn btn-outline-primary" href="{{ client.get_absolute_url }}">Объекты клиента</a></td>
         </tr>
           {% endfor %}

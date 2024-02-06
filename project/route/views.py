@@ -30,7 +30,6 @@ def cart_detail(request):
 
     cart = Cart(request)
     ids = cart.get_ids()
-    print(ids)
 
     if len(ids) == 0:
         return render(
