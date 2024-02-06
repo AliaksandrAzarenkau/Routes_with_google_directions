@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import User, UserProfilePhoto
+from registration import models
 
 
 class UserSerializer(serializers.Serializer):
@@ -13,7 +13,7 @@ class UserSerializer(serializers.Serializer):
     profile_photo = serializers.ImageField(label='Фото профиля')
 
     def create(self, validated_data):
-        user = User.objects.create(
+        user = models.User.objects.create(
             first_name=validated_data.get('first_name'),
             last_name=validated_data.get('last_name'),
             email=validated_data.get('email'),
@@ -52,7 +52,7 @@ class UserRegisterSerializer(serializers.Serializer):
                                       )
     email = serializers.CharField(label='Почта',
                                   style={
-                                      "input_type": "text",
+                                      "input_type": "email",
                                       "autofocus": False,
                                       "autocomplete": "off",
                                       "required": True,
@@ -65,7 +65,7 @@ class UserRegisterSerializer(serializers.Serializer):
     password = serializers.CharField(label='Пароль',
                                      write_only=True,
                                      style={
-                                         "input_type": "text",
+                                         "input_type": "password",
                                          "autofocus": False,
                                          "autocomplete": "off",
                                          "required": True,
@@ -90,7 +90,7 @@ class UserRegisterSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         """Создание профиля на основе полученных данных с дефолтным аватаром"""
-        user = User.objects.create(
+        user = models.User.objects.create(
             first_name=validated_data.get('first_name'),
             last_name=validated_data.get('last_name'),
             email=validated_data.get('email'),
@@ -98,7 +98,7 @@ class UserRegisterSerializer(serializers.Serializer):
             position=validated_data.get('position'),
         )
 
-        photo = UserProfilePhoto.objects.create(
+        photo = models.UserProfilePhoto.objects.create(
             email_id=user.id
         )
         photo.save()
@@ -106,43 +106,36 @@ class UserRegisterSerializer(serializers.Serializer):
         return user
 
     class Meta:
-        model = User
-        fields = ['first_name', 'last_name', 'email', 'password', 'position']
+        model = models.User
+        fields = ['email', 'password', 'first_name', 'last_name', 'position']
 
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.CharField(label='Адрес электронной почты',
                                   style={
-                                      "input_type": "text",
+                                      "input_type": "email",
                                       "autofocus": False,
                                       "autocomplete": "off",
                                       "required": True,
                                   },
-                                  error_messages={
-                                      "required": "Обязательно для заполнения",
-                                      "blank": "Почта необходима",
-                                  },
                                   )
     password = serializers.CharField(write_only=True,
+                                     label='Пароль',
                                      style={
-                                         "input_type": "text",
+                                         'input_type': 'password',
                                          "autofocus": False,
                                          "autocomplete": "off",
                                          "required": True,
                                      },
-                                     error_messages={
-                                         "required": "Обязательно для заполнения",
-                                         "blank": "Пароль обязателен",
-                                     },
-                                     label='Пароль')
+                                     )
 
     class Meta:
-        model = User
+        model = models.User
         fields = ['email', 'password']
 
 
 class UserEditProfileSerializer(serializers.Serializer):
-    model = User
+    model = models.User
 
     email = serializers.CharField(label='Почта',
                                   style={
@@ -202,12 +195,12 @@ class UserEditProfileSerializer(serializers.Serializer):
         return instance
 
     class Meta:
-        model = User
+        model = models.User
         fields = ['email', 'first_name', 'last_name', 'position']
 
 
 class UserPhotoProfileSerializer(serializers.Serializer):
-    model = UserProfilePhoto
+    model = models.UserProfilePhoto
 
     email_id = serializers.PKOnlyObject
     profile_photo = serializers.ImageField(label='Фото профиля',
@@ -224,7 +217,7 @@ class UserPhotoProfileSerializer(serializers.Serializer):
                                            )
 
     def get_photo(self, request):
-        data = UserProfilePhoto.objects.filter(email_id=request).first()
+        data = models.UserProfilePhoto.objects.filter(email_id=request).first()
         resp = data.profile_photo
 
         return resp
@@ -235,5 +228,5 @@ class UserPhotoProfileSerializer(serializers.Serializer):
         return instance
 
     class Meta:
-        model = UserProfilePhoto
+        model = models.UserProfilePhoto
         fields = ['profile_photo', 'email_id']

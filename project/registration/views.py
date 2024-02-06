@@ -1,22 +1,21 @@
 from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import redirect
-from django.http import HttpResponseRedirect, HttpResponse
+from django.shortcuts import redirect, render
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden
 from django.contrib import messages
 from django.views.generic import base
 from rest_framework import views, response, exceptions, permissions, status, generics
 from rest_framework.generics import get_object_or_404
 from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 
-from .serializers import UserSerializer, LoginSerializer, UserRegisterSerializer, UserEditProfileSerializer, \
-    UserPhotoProfileSerializer
-from .services import user_email_selector, create_token
-from .authentication import CustomUserAuthentication
-from .models import User, UserProfilePhoto
+from registration import serializers
+from registration.services import user_email_selector, create_token
+from registration.authentication import CustomUserAuthentication
+from registration import models
 
 
 class RegistrationAPIVew(generics.ListAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserRegisterSerializer
+    queryset = models.User.objects.all()
+    serializer_class = serializers.UserRegisterSerializer
     permission_classes = [permissions.AllowAny]
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
     template_name = 'signup.html'
@@ -35,6 +34,11 @@ class RegistrationAPIVew(generics.ListAPIView):
 
     def post(self, request):
         """Регистрация пользователя"""
+        email = request.data['email']
+        if user_email_selector(email=email) is not None:
+            context = messages.error(request, 'Почта уже зарегистрирована')
+            return HttpResponseRedirect('./user_create', content=context)
+
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -48,11 +52,11 @@ class RegistrationAPIVew(generics.ListAPIView):
 
 
 class LoginAPIView(generics.ListAPIView):
-    queryset = User.objects.all()
+    queryset = models.User.objects.all()
     permission_classes = [permissions.AllowAny]
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
     template_name = 'login.html'
-    serializer_class = LoginSerializer
+    serializer_class = serializers.LoginSerializer
 
     def get(self, request, *args, **kwargs):
         """Получение данных пользователей"""
@@ -73,10 +77,12 @@ class LoginAPIView(generics.ListAPIView):
         user = user_email_selector(email=email)
 
         if user is None:
-            raise exceptions.AuthenticationFailed("Неверный адрес почты")
+            context = messages.error(request, 'Неверный адрес почты')
+            return HttpResponseRedirect('login', content=context)
 
-        if user.check_password(raw_password=password):
-            raise exceptions.AuthenticationFailed("Неверный пароль")
+        if user.password != password:
+            context = messages.error(request, 'Неверный пароль')
+            return HttpResponseRedirect('login', content=context)
 
         token = create_token(user_id=user.id)
 
@@ -96,11 +102,11 @@ class LoginAPIView(generics.ListAPIView):
 
 
 class LogoutAPIView(generics.ListAPIView):
-    queryset = User.objects.all()
+    queryset = models.User.objects.all()
     permission_classes = [permissions.AllowAny]
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
     template_name = 'logout.html'
-    serializer_class = LoginSerializer
+    serializer_class = serializers.LoginSerializer
 
     def get(self, request, *args, **kwargs):
         """Получение данных пользователя"""
@@ -135,7 +141,7 @@ class LogoutAPIView(generics.ListAPIView):
 class GetCurrentUserAPIVew(views.APIView):
     authentication_classes = [CustomUserAuthentication]
     permission_classes = [permissions.IsAuthenticated]
-    serializer_class = UserSerializer
+    serializer_class = serializers.UserSerializer
 
     def get(self, request):
         """Получение информации о текущем пользователе"""
@@ -147,8 +153,8 @@ class GetCurrentUserAPIVew(views.APIView):
 
 
 class HomePageView(generics.ListAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+    queryset = models.User.objects.all()
+    serializer_class = serializers.UserSerializer
     permission_classes = [permissions.AllowAny]
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
     template_name = 'index.html'
@@ -169,8 +175,8 @@ class HomePageView(generics.ListAPIView):
 
 
 class UserEditProfileAPIView(generics.RetrieveUpdateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserEditProfileSerializer
+    queryset = models.User.objects.all()
+    serializer_class = serializers.UserEditProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
     template_name = 'user_profile.html'
@@ -190,6 +196,12 @@ class UserEditProfileAPIView(generics.RetrieveUpdateAPIView):
         return self.update(request)
 
     def update(self, request, *args, **kwargs):
+        email = request.data['email']
+        if user_email_selector(email=email) is not None:
+            context = messages.error(request, 'Почта уже зарегистрирована')
+
+            return HttpResponseRedirect('./user_profile', content=context)
+
         instance = get_object_or_404(self.queryset, pk=request.user.id)
         serializer = self.serializer_class(instance=instance, data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -203,47 +215,11 @@ class UserEditProfileAPIView(generics.RetrieveUpdateAPIView):
             return response.Response(status=status.HTTP_200_OK)
 
 
-# class UserPhotoAPIView(generics.RetrieveUpdateAPIView):
-#     queryset = UserProfilePhoto.objects.all()
-#     serializer_class = UserPhotoProfileSerializer
-#     permission_classes = [permissions.IsAuthenticated]
-#     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
-#     template_name = 'user_profile.html'
-#
-#     def get(self, request, *args, **kwargs):
-#         """Получение фото текущего пользователя для заполнения шаблона"""
-#         pk = request.user.id
-#         profile_photo = self.serializer_class.get_photo(request, pk)
-#         return profile_photo
-# serializer = self.serializer_class(request)
-# if request.accepted_renderer.format == 'html':
-#     context = {'user': request, 'serializer': serializer}
-#     return response.Response(context)
-# else:
-#     return response.Response(serializer, status=status.HTTP_200_OK)
-
-# def post(self, request):
-#     """Перемычка"""
-#     return self.update(request)
-#
-# def update(self, request, *args, **kwargs):
-#     instance = get_object_or_404(self.queryset, pk=request.user.email_id)
-#     serializer = self.serializer_class(instance=instance, data=request.data)
-#     serializer.is_valid(raise_exception=True)
-#     serializer.save()
-#
-#     if request.accepted_renderer.format == 'html':
-#         message = "Фото обновлено успешно"
-#         messages.success(request, message)
-#         return redirect('./user_profile')
-#     else:
-#         return response.Response(status=status.HTTP_200_OK)
-
 class UserPhotoView(base.View):
     permission_classes = [permissions.IsAuthenticated]
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
 
     def get(self, request):
-        resp = UserPhotoProfileSerializer.get_photo(request, request.user.id)
+        resp = serializers.UserPhotoProfileSerializer.get_photo(request, request.user.id)
 
         return HttpResponse(resp)

@@ -1,3 +1,4 @@
+from django.http import HttpResponseRedirect
 from rest_framework import status, generics, permissions
 from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 from rest_framework.response import Response
@@ -33,6 +34,15 @@ class ClientAPIVew(generics.ListAPIView):
 
     def post(self, request):
         """Добавление данных клиента"""
+
+        if not request.data['organisation_name']:
+            context = messages.error(request, 'Введите наименование организации')
+            return HttpResponseRedirect('./client_create', content=context)
+
+        if not request.data['phone']:
+            context = messages.error(request, 'Введите номер телефона')
+            return HttpResponseRedirect('./client_create', content=context)
+
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -66,9 +76,9 @@ class ClientProfileAPIVew(generics.ListAPIView):
 
     def post(self, request):
         """Добавление данных объекта клиента"""
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
+        serializer = self.serializer_class.create(request, request.data)
+        # serializer.is_valid(raise_exception=True)
+        # serializer.save()
 
         if request.accepted_renderer.format == 'html':
             message = "Объект добавлен"
