@@ -25,7 +25,7 @@
                                 {% csrf_token %}
                                 {% render_form serializer %}
                             </div>
-                            <button class="btn btn-success btn-md float-end mt-2 mb-0 mx-2" type="submit">
+                            <button class="btn btn-outline-success btn-md float-end mt-2 mb-0 mx-2" type="submit">
                                 Сохранить
                             </button>
                         </form>
@@ -33,9 +33,13 @@
                 </div>
             </div>
             <div class="col justify-content-end">
-                <div class="container justify-content-end">
-                    <img src="{% url 'user_profile_photo' %}" width="200" height="200" alt="#">
-<!--                    <a class="btn btn-primary my-3" href="#" role="button">Сменить фото</a>-->
+                <div class="container d-flex flex-column mb-3 justify-content-center">
+                    <div class="d-flex justify-content-center">
+                        <img src="{% url 'user_profile_photo' %}" width="200" height="200" alt="#">
+                    </div>
+                    <div class="d-flex justify-content-center m-1">
+                        <a class="btn btn-outline-success" href="/registration/logout" role="button">Выйти</a>
+                    </div>
                 </div>
             </div>
         </div>

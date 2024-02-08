@@ -1,15 +1,20 @@
 header {
     font-family: "Open Sans", sans-serif;
-    background: url(images/background_header.png);
+    background: url(images/header_footer.jpg);
     font-weight: <weight>;
 }
 
 body {
     font-family: "Open Sans", sans-serif;
-    background: url(images/background_main.png);
+    background: url(images/body.png);
+}
+
+.content {
+    font-family: "Open Sans", sans-serif;
+
 }
 
 footer {
     font-family: "Open Sans", sans-serif;
-    background: url(images/background_footer.png);
+    background: url(images/header_footer.jpg);
 }

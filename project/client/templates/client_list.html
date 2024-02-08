@@ -10,29 +10,33 @@
 </div>
 {% endfor %}
 
-<div class="container py-4 row-cols-1 d-flex flex-wrap align-items-center justify-content-center">
+<div class="container py-4">
     <table class="table table-hover">
-      <thead>
+        <thead>
         <tr>
-          <th scope="col">#</th>
-          <th scope="col">Контрагент</th>
-          <th scope="col">Телефон</th>
-          <th scope="col">Объекты</th>
+            <th scope="col">#</th>
+            <th scope="col" class="w-auto">Контрагент</th>
+            <th scope="col" class="text-center">Телефон</th>
+            <th scope="col" class="text-center">Объекты</th>
         </tr>
-      </thead>
-      <tbody>
-          {% csrf_token %}
-          {% for client in clients %}
+        </thead>
+        <tbody>
+        {% csrf_token %}
+        {% for client in clients %}
         <tr>
-          <th scope="row">{{ client.id }}</th>
-          <td>{{ client.organisation_name }}</td>
-          <td>
-              <p><a href="tel:+375{{ client.phone }}" class="link-success link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">+375{{ client.phone }}</a></p>
-          </td>
-          <td><a class="btn btn-outline-primary" href="{{ client.get_absolute_url }}">Объекты клиента</a></td>
+            <th scope="row">{{ client.id }}</th>
+            <td>{{ client.organisation_name }}</td>
+            <td>
+                <p class="text-center"><a href="tel:+375{{ client.phone }}" class="link-success link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">+375{{ client.phone }}</a></p>
+            </td>
+            <td>
+                <div class="text-center">
+                    <a class="btn btn-outline-primary" href="{{ client.get_absolute_url }}">Объекты клиента</a>
+                </div>
+            </td>
         </tr>
           {% endfor %}
-      </tbody>
+        </tbody>
     </table>
 </div>
 

@@ -3,27 +3,32 @@
 {% load bootstrap5 %}
 
 {% block content %}
-
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">Автор</th>
-      <th scope="col">Дата</th>
-      <th scope="col"></th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for route in data %}
-    <tr>
-      <th scope="row">{{ route.id }}</th>
-      <td>{{ route.email }}</td>
-      <td>{{ route.created }}</td>
-      <td><a href="{{ route.get_absolute_url }}" class="list-group-item list-group-item-action text-center">Детали заказа</a></td>
-    </tr>
-     {% endfor %}
-  </tbody>
-</table>
+<div class="d-flex justify-content-center">
+    <table class="table table-hover m-4 align-middle w-75">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col" class="text-center">Автор</th>
+            <th scope="col" class="text-center">Дата</th>
+            <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for route in data %}
+            <tr>
+            <th scope="row">{{ route.id }}</th>
+            <td class="text-center">{{ route.email }}</td>
+            <td class="text-center">{{ route.created }}</td>
+            <td>
+                <div class="d-flex justify-content-center">
+                    <a href="{{ route.get_absolute_url }}" class="btn btn-outline-primary">Детали заказа</a>
+                </div>
+            </td>
+            </tr>
+         {% endfor %}
+        </tbody>
+    </table>
+</div>
 
 <footer>
     <div class="container py-4 row-cols-2 d-flex flex-wrap align-items-center text-center border-top fixed-bottom">
