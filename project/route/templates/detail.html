@@ -6,75 +6,75 @@
 
 {% if messages %}
     <p class="h3 text-center p-5">{{ messages }}</p>
-
-<footer>
-    <div class="container p-4 row-cols-2 d-flex flex-wrap align-items-center text-center border-top fixed-bottom">
-        <div class="col text-start">
-            <p class="col-md-4 mb-0 text-muted">© 2024 Company, Inc</p>
-        </div>
-        <div class="col text-end">
-            <a href="/registration/home" class="nav-link px-2 text-muted">О нас</a>
-        </div>
-    </div>
-</footer>
 {% else %}
-    <table class="table border">
-  <thead class="text-center border border-black">
-    <tr>
-        <th scope="col" class="text-center border">Контрагент</th>
-        <th scope="col" class="text-center border">Телефон</th>
-        <th scope="col" class="text-center border">Страна</th>
-        <th scope="col" class="text-center border">Город</th>
-        <th scope="col" class="text-center border">Улица</th>
-        <th scope="col" class="text-center border">Дом/строение</th>
-        <th scope="col" class="text-center border">Действие</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-        <td>
+
+<table class="table">
+    <tbody class="d-flex justify-content-around">
+    <tr class="d-inline-flex">
+        <td class="d-inline-flex flex-column">
+            <h4 class="border-bottom">Контрагент</h4>
             {% for client in  clients %}
+            <div class="p-2">
                 <p>{{ client.organisation_name }}</p>
+            </div>
             {% endfor %}
         </td>
-        <td>
+        <td class="d-inline-flex flex-column">
+            <h4 class="border-bottom text-center">Телефон</h4>
             {% for point in addresses %}
-                <p>{{ point.phone }}</p>
+            <div class="p-2">
+                <p><a href="tel:+375{{ point.phone }}" class="link-success link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">+375{{ point.phone }}</a></p>
+            </div>
             {% endfor %}
         </td>
-        <td>
+        <td class="d-inline-flex flex-column">
+            <h4 class="border-bottom">Страна</h4>
             {% for point in addresses %}
+            <div class="p-2">
                 <p>{{ point.country }}</p>
+            </div>
             {% endfor %}
         </td>
-        <td>
+        <td class="d-inline-flex flex-column">
+            <h4 class="border-bottom">Город</h4>
             {% for point in addresses %}
+            <div class="p-2">
                 <p>{{ point.city }}</p>
+            </div>
             {% endfor %}
         </td>
-        <td>
+        <td class="d-inline-flex flex-column">
+            <h4 class="border-bottom">Улица</h4>
             {% for point in addresses %}
+            <div class="p-2">
                 <p>{{ point.street }}</p>
+            </div>
             {% endfor %}
         </td>
-        <td>
+        <td class="d-inline-flex flex-column text-center">
+            <h4 class="border-bottom">Дом/строение</h4>
             {% for point in addresses %}
+            <div class="p-2">
                 <p>{{ point.building }}</p>
+            </div>
             {% endfor %}
         </td>
-        <td class="text-center">
+        <td class="d-inline-flex flex-column text-center">
+            <h4 class="border-bottom">Действие</h4>
             {% for item in cart %}
                 {% with product=item.product %}
+            <div>
                 <form  method="post" action="{% url 'cart_remove' product.id %}">
                     {{ cart_product_form }}
                     {% csrf_token %}
-                    <input id="remove_btn" type="submit" value="Удалить">
+                    <input id="remove_btn" class="btn btn-outline-secondary" type="submit" value="Удалить">
                 </form>
+            </div>
                 {% endwith %}
             {% endfor %}
         </td>
     </tr>
-  </tbody>
+    </tbody>
 </table>
 
     <div class="container p-4 text-center">
