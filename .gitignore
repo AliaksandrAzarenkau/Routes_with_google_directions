@@ -1,3 +1,2 @@
 /venv/
-/project/db.sqlite3
-/project/.env
+.idea/
