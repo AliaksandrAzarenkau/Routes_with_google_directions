@@ -7,7 +7,6 @@
     <table class="table table-hover m-4 align-middle w-75">
         <thead>
         <tr>
-            <th scope="col">#</th>
             <th scope="col" class="text-center">Автор</th>
             <th scope="col" class="text-center">Дата</th>
             <th scope="col"></th>
@@ -16,7 +15,6 @@
         <tbody>
         {% for route in data %}
             <tr>
-            <th scope="row">{{ route.id }}</th>
             <td class="text-center">{{ route.email }}</td>
             <td class="text-center">{{ route.created }}</td>
             <td>

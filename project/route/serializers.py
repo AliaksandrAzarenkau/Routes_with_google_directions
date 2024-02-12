@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
-from .models import Route
-from client.models import Client, ClientObjectsProfile
+from route.models import Route
+from client.models import ClientObjectsProfile
 
 PRODUCT_QUANTITY_CHOICES = [(i, str(i)) for i in range(1, 21)]
 
@@ -34,38 +34,13 @@ class RouteArchiveSerializer(serializers.Serializer):
     def get_details(self, pk):
         """Достаём все адреса объектов маршрута"""
         route = Route.objects.get(id=pk)
-        client_data = ClientObjectsProfile.objects.all()
         ids = route.client_ids
 
         objects_list = []
         filtered_ids = ids.split(',')
-        for obj_id in filtered_ids:
-            for i in obj_id:
-                obj = ClientObjectsProfile.objects.get(id=int(i))
-                objects_list.append(obj)
-
-        # objects_list = []
-        # one_route_addresses = []
-        # temp_list = []
-        # for route in routes_data:
-        #     ids = route.client_ids
-        #     filtered_ids = ids.split(',')
-        #     for obj_id in filtered_ids:
-        #         for i in obj_id:
-        #             obj = ClientObjectsProfile.objects.get(id=int(i))
-        #             objects_list.append(obj)
-
-        #         for i in obj_id:
-        #             address = ''
-        #             client = client_data.get(id=int(i))
-        #             city = client.city
-        #             street = client.street
-        #             building = client.building
-        #             address = f'{city}, {street}, {building}'
-        #             temp_list.append(address)
-        #     one_route_addresses.append(temp_list)
-        #     temp_list = []
-        # objects_list.append(one_route_addresses)
+        for i in filtered_ids:
+            obj = ClientObjectsProfile.objects.get(id=int(i))
+            objects_list.append(obj)
 
         return objects_list
 

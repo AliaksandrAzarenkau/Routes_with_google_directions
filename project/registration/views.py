@@ -1,9 +1,9 @@
 from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import redirect, render
-from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden
+from django.shortcuts import redirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib import messages
 from django.views.generic import base
-from rest_framework import views, response, exceptions, permissions, status, generics
+from rest_framework import views, response, permissions, status, generics
 from rest_framework.generics import get_object_or_404
 from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 
@@ -196,6 +196,7 @@ class UserEditProfileAPIView(generics.RetrieveUpdateAPIView):
         return self.update(request)
 
     def update(self, request, *args, **kwargs):
+        """Обновление данных профиля"""
         email = request.data['email']
         if user_email_selector(email=email) is not None:
             context = messages.error(request, 'Почта уже зарегистрирована')
@@ -216,6 +217,7 @@ class UserEditProfileAPIView(generics.RetrieveUpdateAPIView):
 
 
 class UserPhotoView(base.View):
+    """Получение фото профиля"""
     permission_classes = [permissions.IsAuthenticated]
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
 

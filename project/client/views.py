@@ -6,11 +6,9 @@ from rest_framework.permissions import AllowAny
 from django.shortcuts import redirect, get_object_or_404, render
 from django.contrib import messages
 
-import os
-
 from route.serializers import CartAddProductSerializer
-from .models import Client, ClientObjectsProfile
-from .serializers import ClientCreateSerializer, ClientObjectsProfileSerializer, ClientListSerializer
+from client.models import Client, ClientObjectsProfile
+from client.serializers import ClientCreateSerializer, ClientObjectsProfileSerializer, ClientListSerializer
 
 
 class ClientAPIVew(generics.ListAPIView):
@@ -77,8 +75,6 @@ class ClientProfileAPIVew(generics.ListAPIView):
     def post(self, request):
         """Добавление данных объекта клиента"""
         serializer = self.serializer_class.create(request, request.data)
-        # serializer.is_valid(raise_exception=True)
-        # serializer.save()
 
         if request.accepted_renderer.format == 'html':
             message = "Объект добавлен"
