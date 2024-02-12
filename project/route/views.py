@@ -3,16 +3,16 @@ import os
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 
-
 from client.models import ClientObjectsProfile
 from client.serializers import ClientListSerializer
 from route.models import Route
 from route.serializers import RouteCreateSerializer, RouteArchiveSerializer
-from .cart import Cart
+from route.cart import Cart
 
 
 @require_POST
 def cart_add(request, product_id):
+    """Добавить точку в маршрут"""
     cart = Cart(request)
     product = get_object_or_404(ClientObjectsProfile, id=product_id)
     cart.add(product=product)
@@ -20,6 +20,7 @@ def cart_add(request, product_id):
 
 
 def cart_remove(request, product_id):
+    """Удалить точку из маршрута"""
     cart = Cart(request)
     product = get_object_or_404(ClientObjectsProfile, id=product_id)
     cart.remove(product)
@@ -27,6 +28,7 @@ def cart_remove(request, product_id):
 
 
 def cart_detail(request):
+    """Посмотреть маршрут"""
 
     cart = Cart(request)
     ids = cart.get_ids()
@@ -55,6 +57,7 @@ def cart_detail(request):
 
 
 def route_save(request):
+    """Сохранение маршрута"""
 
     cart = Cart(request)
     ids = cart.get_ids()
@@ -75,12 +78,14 @@ def route_save(request):
 
 
 def route_archive(request):
+    """Просмотр списка маршрутов"""
     routes = Route.objects.all()
 
     return render(request, template_name='route_archive.html', context={'data': routes})
 
 
 def route_archive_detail(request, pk):
+    """Просмотр сохраненного маршрута"""
     serializer = RouteArchiveSerializer.get_details(request, pk)
 
     return render(request, template_name='archive_detail.html', context={'objects': serializer})

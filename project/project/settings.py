@@ -1,4 +1,3 @@
-from datetime import timedelta
 from pathlib import Path
 from dotenv import load_dotenv
 import os
@@ -29,7 +28,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'bootstrap5',
-    'drf_yasg',
     'client',
     'registration',
     'route',
@@ -130,31 +128,3 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated'
     )
 }
-
-# SIMPLE_JWT = {
-#     'ACCESS_TOKEN': {
-#         'LIFETIME': timedelta(minutes=60),
-#         'SLIDING_REFRESH_LIFETIME': timedelta(days=1),
-#     },
-#     'REFRESH_TOKEN': {
-#         'LIFETIME': timedelta(days=7),
-#         'SLIDING_REFRESH_LIFETIME': timedelta(days=14),
-#         'SLIDING_LIFETIME': timedelta(days=30),
-#     },
-#     'ALGORITHM': 'HS256',
-#     'SIGNING_KEY': SECRET_KEY,
-#     'VERIFYING_KEY': None,
-#     'AUTH_HEADER_TYPES': ('Bearer',),
-#     'USER_ID_CLAIM': 'user_id',
-# }
-
-# SWAGGER_SETTINGS = {
-#     'DEFAULT_INFO': 'project.urls.swagger_info',
-#     'SECURITY_DEFINITIONS': {
-#         'Bearer': {
-#             'type': 'apiKey',
-#             'name': 'Authorization',
-#             'in': 'header',
-#         },
-#     },
-# }

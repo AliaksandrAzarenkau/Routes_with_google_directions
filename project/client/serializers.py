@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
-from .models import Client, ClientObjectsProfile
-from .services import get_latlon
+from client.models import Client, ClientObjectsProfile
+from client.services import get_latlon
 
 
 class ClientCreateSerializer(serializers.ModelSerializer):
@@ -42,6 +42,7 @@ class ClientCreateSerializer(serializers.ModelSerializer):
 
 
 class ClientObjectsProfileSerializer(serializers.ModelSerializer):
+
     clients = Client.objects.all()
 
     CLIENT_CHOICES = []
@@ -91,38 +92,18 @@ class ClientObjectsProfileSerializer(serializers.ModelSerializer):
                                      },
                                      )
 
-    # def get(self):
-    #     clients = Client.objects.all()
-    #
-    #     CLIENT_CHOICES = []
-    #     for client in clients:
-    #         CLIENT_CHOICES.append([client.id, client.organisation_name])
-    #
-    #     organisation_name = serializers.ChoiceField(CLIENT_CHOICES)
-    #
-    #     data = {'organisation_name': organisation_name,
-    #             'phone': ClientObjectsProfile.phone,
-    #             'country': ClientObjectsProfile.country,
-    #             'city': ClientObjectsProfile.city,
-    #             'street': ClientObjectsProfile.street,
-    #             'building': ClientObjectsProfile.building
-    #             }
-    #
-    #     return data
-
     def create(self, request_data):
         """Создание карточки клиента"""
-        org_id = int(request_data.get('organisation_name'))
-        organisation_name_id = Client.objects.get(id=org_id)
+        org_name = request_data.get('organisation_name')
+        client = Client.objects.get(organisation_name=org_name)
         country = request_data.get('country'),
         city = request_data.get('city'),
         street = request_data.get('street'),
         building = request_data.get('building'),
         latlon = get_latlon([country, city, street, building])
-        print(f'{organisation_name_id}|{country}|{city}|{street}|{building}|{latlon}')
 
         response = ClientObjectsProfile.objects.create(
-            organisation_name=organisation_name_id,
+            organisation_name=client,
             phone=request_data.get('phone'),
             country=country[0],
             city=city[0],
